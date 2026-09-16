@@ -1,0 +1,14 @@
+Filename: .\test_memory_profile.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+    14     61.3 MiB     61.3 MiB           1   @profile(stream=log_file)
+    15                                         # @profile
+    16                                         def myfunction(list_size):
+    17     61.3 MiB      0.0 MiB           1       print(f"Creating a list of size {list_size}...")
+    18    137.6 MiB     76.3 MiB           1       mylist = ['hello'] * list_size
+    19    213.9 MiB     76.3 MiB           1       mylist2 = ['world'] * list_size
+    20    137.6 MiB    -76.3 MiB           1       del mylist2
+    21    137.6 MiB      0.0 MiB           1       return mylist
+
+

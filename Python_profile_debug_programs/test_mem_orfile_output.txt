@@ -1,0 +1,119 @@
+
+sync funct
+=========================================================================================
+
+'''
+To focus on the execution time of your actual code line-by-line rather than internal 
+library imports and functions, switch from cProfile to line_profiler.
+
+cProfile tracks every internal call across the entire Python stack, whereas
+ line_profiler isolates target functions and displays execution time for 
+ each line inside them.
+
+install line_profiler 
+pip install line_profiler
+
+# use this to run the memory profiler and get a report of memory usage and the 
+# time taken by each function in the code.
+# uv run --active kernprof -l -v test_mem_profileProb.py
+
+Key Columns Explained
+
+    Hits: How many times that line executed.
+
+    Time: Total time spent on that line (in microseconds).
+
+    % Time: Percentage of total function runtime spent on that line.
+
+    Line Contents: Your actual code.
+
+
+             uv run --active kernprof -l -v test_mem_profileProb.pyC:\Users\samin\Python\python_proj\Python_Assignment\test_projdebug_mem> 
+Installed 7 packages in 65ms
+finished parsing
+count_https=1618
+count_http=96
+count_https/count_http=16.854166666666668
+Elapsed time: 13.97 seconds
+Wrote profile results to 'test_mem_profileProb.py.lprof'
+Timer unit: 1e-06 s
+
+Total time: 13.9639 s
+File: test_mem_profileProb.py
+Function: count_https_in_web_pages at line 12
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    12                                           @profile
+    13                                           def count_https_in_web_pages():
+    14         2      13484.0   6742.0      0.1      with open('websites.txt', 'r', encoding='utf-8') as f:
+    15         1         94.3     94.3      0.0          urls = [line.strip() for line in f.readlines()]
+    16                                           
+    17         1          0.5      0.5      0.0      htmls = []
+    18        16         18.2      1.1      0.0      for url in urls:
+    19        15   11941078.6 796071.9     85.5          htmls = htmls + [requests.get(url).text]
+    20                                           
+    21         1          0.6      0.6      0.0      count_https = 0
+    22         1          0.2      0.2      0.0      count_http = 0
+    23        16          6.5      0.4      0.0      for html in htmls:
+    24        15       4110.8    274.1      0.0          count_https += len(re.findall("https://", html))
+    25        15       4572.6    304.8      0.0          count_http += len(re.findall("http://", html))
+    26                                           
+    27         1        117.7    117.7      0.0      print('finished parsing')
+    28         1    2000147.6    2e+06     14.3      time.sleep(2.0)
+    29         1        139.2    139.2      0.0      print(f'{count_https=}')
+    30         1        100.0    100.0      0.0      print(f'{count_http=}')
+    31         1         42.4     42.4      0.0      print(f'{count_https/count_http=}')
+
+(test_projdebug_mem) PS C:\Users\samin\Python\python_proj\Python_Assignment\test_projdebug_mem> 
+
+
+'''
+
+
+
+with AsyncClient
+=========================================================================================
+'''
+(test_projdebug_mem) PS C:\Users\samin\Python\python_proj\Python_Assignment\test_projdebug_mem> uv run --active kernprof -l -v .\test_mem_profileSol2.py
+Installed 4 packages in 49ms
+finished parsing
+count_https=1618
+count_http=96
+count_https/count_http=16.854166666666668
+Elapsed time: 1.95 seconds
+Wrote profile results to 'test_mem_profileSol2.py.lprof'
+Timer unit: 1e-06 s
+
+Total time: 0.443688 s
+File: .\test_mem_profileSol2.py
+Function: better_count_https_in_web_pages at line 29
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    29                                           @profile
+    30                                           async def better_count_https_in_web_pages():
+    31         2        181.5     90.8      0.0      with open('websites.txt', 'r', encoding='utf-8') as f:
+    32         1         92.7     92.7      0.0          urls = [line.strip() for line in f.readlines()]
+    33                                           
+    34         2     422872.7 211436.4     95.3      async with httpx.AsyncClient() as client:
+    35         1          2.2      2.2      0.0          tasks = (client.get(url, follow_redirects=True) for url in urls)
+    36         1        301.5    301.5      0.1          reqs = await asyncio.gather(*tasks)
+    37                                           
+    38         1       9979.3   9979.3      2.2      htmls = [req.text for req in reqs]
+    39                                           
+    40         1          0.5      0.5      0.0      count_https = 0
+    41         1          0.2      0.2      0.0      count_http = 0
+    42        16          9.6      0.6      0.0      for html in htmls:
+    43        15       4756.0    317.1      1.1          count_https += len(re.findall("https://", html))
+    44        15       5153.1    343.5      1.2          count_http += len(re.findall("http://", html))
+    45                                           
+    46         1        156.8    156.8      0.0      print('finished parsing')
+    47         1         67.3     67.3      0.0      print(f'{count_https=}')
+    48         1         65.2     65.2      0.0      print(f'{count_http=}')
+    49         1         49.9     49.9      0.0      print(f'{count_https/count_http=}')
+
+(test_projdebug_mem) PS C:\Users\samin\Python\python_proj\Python_Assignment\test_projdebug_mem> 
+
+
+'''
